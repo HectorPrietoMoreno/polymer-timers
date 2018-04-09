@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>Timer test</title>
+
+    <script src="../../../webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../../web-component-tester/browser.js"></script>
+
+
+    <link rel="import" href="../../src/timer-bar/timer-bar.html">
+  </head>
+  <body>
+
+    <test-fixture id="BasicTestFixture">
+      <template>
+        <timer-bar id="timerBar"></timer-bar>
+      </template>
+    </test-fixture>
+
+
+    <script>
+      describe('timer-bar', function() {
+
+        it('should show two inputs and the creation button', function() {
+            let element = fixture('BasicTestFixture'),
+                elementShadowRoot = element.shadowRoot,
+                nameInput = elementShadowRoot.querySelector('#name'),
+                timeInput = elementShadowRoot.querySelector('#time'),
+                createButton = elementShadowRoot.querySelector('.create');
+            expect(nameInput).to.not.be.null;
+            expect(timeInput).to.not.be.null;
+            expect(createButton).to.not.be.null;
+        });
+
+        it('should show proper placeholders in inputs and content in create button', function() {
+            let element = fixture('BasicTestFixture'),
+                elementShadowRoot = element.shadowRoot,
+                nameInput = elementShadowRoot.querySelector('#name'),
+                timeInput = elementShadowRoot.querySelector('#time'),
+                createButton = elementShadowRoot.querySelector('.create');
+            expect(nameInput.label).to.equal("Enter a timer name");
+            expect(timeInput.label).to.equal("Enter a valid timer time in seconds");
+            expect(createButton.innerHTML).to.equal("Create");
+        });
+
+        it('should show fire the creation event when click in creation button', function(done) {
+            const labelValue = 'label',
+                timeValue = 123,
+                element = fixture('BasicTestFixture'),
+                shadowRoot = element.shadowRoot;
+            element.addEventListener('new-timer', event => {
+              assert.equal(event.detail.timerName, labelValue);
+              assert.equal(event.detail.timerTime, timeValue);
+              done();
+            });
+            shadowRoot.querySelector('#name').value = labelValue;
+            shadowRoot.querySelector('#time').value = timeValue;
+            shadowRoot.querySelector('paper-button').click();
+        });
+      });
+    </script>
+
+
+  </body>
+</html>

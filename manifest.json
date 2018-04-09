@@ -1,0 +1,7 @@
+{
+  "name": "polymer-timer",
+  "short_name": "polymer-timer",
+  "description": "Polymer timer app",
+  "start_url": "/",
+  "display": "standalone"
+}

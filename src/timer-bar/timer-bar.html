@@ -1,0 +1,95 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="timer-bar">
+    <script>
+        /**
+         * `timer-bar`
+         * It creates new events
+         *
+         * @customElement
+         * @polymer
+         */
+        class TimerBar extends Polymer.Element {
+            static get template() {
+                return Polymer.html`
+                    <style>
+                        :host {
+
+                        }
+
+                        .timer-bar form {
+                            display: flex;
+                            flex-wrap: wrap;
+                        }
+
+                        .timer-bar form > * {
+                            margin: 1rem 2rem 1rem 0;
+                        }
+
+                        .timer-bar form paper-input:first-child {
+                            margin-left: 0;
+                        }
+
+                        .timer-bar paper-input {
+                            flex: 2 1 0;
+                            display: flex;
+                            min-width: 250px;
+                        }
+
+                        input {
+                            flex: 1 1 0;
+                            font-size: 1.2rem;
+                            padding: 2rem;
+                            min-width: 0;
+                        }
+
+                        .timer-bar paper-button {
+                            flex: 1 1 0;
+                            padding: 2rem;
+                            font-size: 1rem;
+                            color: white;
+                            background-color: #3498db;
+                            border-style: none;
+                            font-weight: bold;
+                        }
+
+                        .timer-bar paper-button:disabled {
+                            background-color: #95a5a6;
+                        }
+                    </style>
+
+                    <div class="timer-bar">
+                        <form>
+                            <paper-input id="name" always-float-label label="Enter a timer name"></paper-input>
+                            <paper-input id="time" type="number" always-float-label label="Enter a valid timer time in seconds"></paper-input>
+                            <paper-button class="create" on-click="addTimer" >Create</paper-button>
+                        </form>
+                    </div>`;
+            }
+            static get is() {
+                return 'timer-bar';
+            }
+
+            static get properties() {
+                return {
+                    timerTime: Number,
+                    timerName: String
+                };
+            }
+
+            addTimer(event) {
+                const timerTime = this.$.time.value;
+                const timerName = this.$.name.value;
+                if (timerTime && timerName) {
+                    this.dispatchEvent(new CustomEvent('new-timer', {detail: {timerName, timerTime}}));
+                } else {
+                    alert("You must fill all data");
+                }
+            }
+        }
+
+        window.customElements.define(TimerBar.is, TimerBar);
+    </script>
+</dom-module>

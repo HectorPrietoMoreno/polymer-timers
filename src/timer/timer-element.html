@@ -1,0 +1,126 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="timer-element">
+    <script>
+        /**
+         * `timer-element`
+         * A timer element
+         *
+         * @customElement
+         * @polymer
+         */
+        class TimerElement extends Polymer.Element  {
+            static get template() {
+                return Polymer.html`
+                    <style>
+                        :host {
+                            background: #2ecc71;
+                            padding: 1rem;
+                            color: white;
+                            font-family: 'Roboto', sans-serif;
+                        }
+
+                        :host(:not([running])) {
+                            background: #C4B731;
+                        }
+
+                        :host([finished]) {
+                            background: #e74c3c;
+                        }
+
+                        paper-button {
+                            font-size: 1rem;
+                            text-transform: none;
+                            margin: 0;
+                            padding: 0;
+                            display: inline;
+                        }
+
+                        .timer .name {
+                            font-size: 1rem;
+                            text-align: left;
+                        }
+
+                        .timer .time {
+                            font-size: 5rem;
+                        }
+
+                        .timer .actions {
+                            display: flex;
+                            justify-content: space-between;
+                        }
+
+                        .timer .actions > div {
+                            cursor: pointer;
+                        }
+                    </style>
+
+                    <div class="timer">
+                        <h2 class="name">[[ name ]]</h2>
+                        <div class="time">[[ formattedTime ]]</div>
+                        <div class="actions">
+                            <div class="action">
+                                <paper-button id="delete" on-click="delete">delete</paper-button>
+                            </div>
+                            <div class="action">
+                                <template is="dom-if" if="[[_isPausable(running, finished)]]">
+                                    <paper-button id="pause" on-click="pause">pause</paper-button>
+                                </template>
+                                <template is="dom-if" if="[[!running]]">
+                                    <paper-button id="resume" on-click="resume">resume</paper-button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+            static get is() {
+                return 'timer-element';
+            }
+
+            static get properties() {
+                return {
+                    name: {
+                        type: String,
+                        value: 'unknown'
+                    },
+                    time: {
+                        type: Number,
+                        value: 0
+                    },
+                    formattedTime: {
+                        type: String
+                    },
+                    finished: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    },
+                    running: {
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
+                    }
+
+                };
+            }
+            _isPausable(running, finished) {
+                return running && !finished;
+            }
+            pause() {
+                this.dispatchEvent(new CustomEvent('pause-timer', {detail: {name: this.name, time: this.time}}));
+            }
+
+            resume() {
+                this.dispatchEvent(new CustomEvent('resume-timer', {detail: {name: this.name, time: this.time}}));
+            }
+
+            delete() {
+                this.dispatchEvent(new CustomEvent('delete-timer', {detail: {name: this.name, time: this.time}}));
+            }
+        }
+
+        window.customElements.define(TimerElement.is, TimerElement);
+    </script>
+</dom-module>

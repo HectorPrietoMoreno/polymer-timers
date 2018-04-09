@@ -1,0 +1,120 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../timer-bar/timer-bar.html">
+<link rel="import" href="../timer-grid/timer-grid.html">
+
+<dom-module id="polymer-timer-app">
+    
+
+    <script>
+        /**
+         * @customElement
+         * @polymer
+         */
+        class PolymerTimerApp extends Polymer.Element {
+            static get template() {
+                return Polymer.html`
+                    <style>
+                        :host {
+                            display: block;
+                        }
+                    </style>
+                    <timer-bar id="timerBar" on-new-timer="timerCreation"></timer-bar>
+                    <timer-grid id="timerGrid" on-delete-timer="delete" on-pause-timer="pause" on-resume-timer="resume" timers="[[timers]]"></timer-grid>`;
+            }
+            static get is() {
+                return 'polymer-timer-app';
+            }
+
+            static get properties() {
+                return {
+                    timers: {
+                        type: Array,
+                        value: []
+                    }
+                };
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                this.next();
+            }
+            timerCreation(event) {
+                const timerName = event.detail.timerName,
+                    timerTime = event.detail.timerTime,
+                    formattedTime = this._formatTime(timerTime),
+                    newTimer = {
+                        name: timerName,
+                        time: timerTime,
+                        formattedTime: formattedTime,
+                        finished: false,
+                        running: true
+                    };
+                let timersTemp = [...this.timers];
+                timersTemp.push(newTimer);
+                this.timers = timersTemp;
+                
+            }
+            
+            next() {
+                    this.timer = setTimeout(() => this.updateTimers(), 1000);
+            }
+
+            updateTimers() {
+                const timersTemp = [...this.timers];
+
+                if(timersTemp.length > 0) {
+                    const newTimersTemp = timersTemp.map(item => {
+                        const newItem = Object.assign({}, item);
+                        if (newItem.running) {
+                            if (newItem.time > 0) {
+                                newItem.time -= 1;
+                                newItem.formattedTime = this._formatTime(newItem.time);
+                            } else {
+                                newItem.running = false;
+                                newItem.finished = true;
+                            }
+                        }
+                        return newItem;
+                    });
+                    this.timers = newTimersTemp
+                }
+                this.next();
+
+            }
+
+            _formatTime(time) {
+                let date = new Date(null);
+                date.setSeconds(time);
+                return date.toISOString().substr(11, 8);
+            }
+
+            disconnectedCallback() {
+                super.disconnectedCallback();
+                clearTimeout(this.timer);
+            }
+
+            delete(event) {
+                const index = event.detail.index;
+                let timersTemp = [...this.timers];
+                timersTemp.splice(index, 1);
+                this.timers = timersTemp;
+            }
+
+            pause(event) {
+                const timersTemp = [...this.timers];
+                const index = event.detail.index;
+                timersTemp[index].running = false;
+                this.timers = timersTemp;
+            }
+
+            resume(event) {
+                const index = event.detail.index;
+                const timersTemp = [...this.timers];
+                timersTemp[index].running = true;
+                this.timers = timersTemp;
+            }
+        }
+
+        window.customElements.define(PolymerTimerApp.is, PolymerTimerApp);
+    </script>
+</dom-module>

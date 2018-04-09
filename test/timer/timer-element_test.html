@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>Timer test</title>
+
+    <script src="../../../webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../../src/timer/timer-element.html">
+  </head>
+  <body>
+
+    <test-fixture id="BasicRunningTestFixture">
+      <template>
+        <timer-element running name="timerExample" formatted-time="00:02:03"></timer-element>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="BasicPausedTestFixture">
+      <template>
+        <timer-element name="timerExample"></timer-element>
+      </template>
+    </test-fixture>
+
+
+    <script>
+      describe('timer-element', function() {
+
+        it('should show right title in timer element', function() {
+            let element = fixture('BasicRunningTestFixture');
+            assert.equal(element.name, 'timerExample');
+            let elementShadowRoot = element.shadowRoot;
+            let elementName = elementShadowRoot.querySelector('.name');
+            assert.equal(elementName.innerHTML, 'timerExample');
+        });
+
+        it('should stop counting when press pause button', function(done) {
+           const element = fixture('BasicRunningTestFixture');
+           element.addEventListener('pause-timer', event => {
+                expect(event.detail.name).to.equal('timerExample');
+                done();
+            });
+            flush(() => {
+                const elementShadowRoot = element.shadowRoot;
+                const elementPauseButton = elementShadowRoot.querySelector('#pause');
+                elementPauseButton.click();
+            });
+        });
+
+        it('should continue counting when press resume button', function(done) {
+           const element = fixture('BasicPausedTestFixture');
+           element.addEventListener('resume-timer', event => {
+                expect(event.detail.name).to.equal('timerExample');
+                done();
+            });
+            flush(() => {
+                const elementShadowRoot = element.shadowRoot;
+                const elementResumeButton = elementShadowRoot.querySelector('#resume');
+                elementResumeButton.click();
+            });
+        });
+
+        it('should be removed when press delete button', function(done) {
+           const element = fixture('BasicRunningTestFixture');
+           element.addEventListener('delete-timer', event => {
+                expect(event.detail.name).to.equal('timerExample');
+                done();
+            });
+            flush(() => {
+                const elementShadowRoot = element.shadowRoot;
+                const elementDeleteButton = elementShadowRoot.querySelector('#delete');
+                elementDeleteButton.click();
+            });
+        });
+
+        it('should show time value (in seconds) well formatted', function () {
+            const element = fixture('BasicRunningTestFixture');
+            assert.equal(element.formattedTime, '00:02:03');
+        });
+
+      });
+    </script>
+
+
+  </body>
+</html>

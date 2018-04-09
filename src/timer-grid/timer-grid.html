@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../timer/timer-element.html">
+
+<dom-module id="timer-grid">
+    <script>
+        /**
+         * `timer-grid`
+         * A timers grid
+         *
+         * @customElement
+         * @polymer
+         */
+        class TimerGrid extends Polymer.Element {
+            static get template() {
+                return Polymer.html`
+                    <style>
+                        .timer-grid {
+                            display: flex;
+                            flex-wrap: wrap;
+                            margin-top: 1rem;
+                        }
+
+                        .timer-grid > * {
+                            margin: 1rem 1rem 0 0;
+                        }
+
+                        .timer-grid > *:first-child {
+                            margin-left: 0;
+                        }
+                    </style>
+
+                    <div class="timer-grid">
+                        <template is="dom-repeat" items="[[timers]]">
+                            <timer-element on-delete-timer="delete" on-pause-timer="pause" on-resume-timer="resume" name="[[item.name]]" formatted-time="[[item.formattedTime]]" finished="[[item.finished]]" running="[[item.running]]"></timer-element>
+                        </template>
+                    </div>`;
+            }
+            static get is() {
+                return 'timer-grid';
+            }
+
+            delete(event) {
+                const {name, time} = event.detail;
+                this.dispatchEvent(new CustomEvent('delete-timer', {detail: {name, time, index: event.model.index}}));
+            }
+
+            pause(event) {
+                const {name, time} = event.detail;
+                this.dispatchEvent(new CustomEvent('pause-timer', {detail: {name, time, index: event.model.index}}));
+            }
+
+            resume(event) {
+                const {name, time} = event.detail;
+                this.dispatchEvent(new CustomEvent('resume-timer', {detail: {name, time, index: event.model.index}}));
+            }
+        }
+
+        window.customElements.define(TimerGrid.is, TimerGrid);
+    </script>
+</dom-module>
